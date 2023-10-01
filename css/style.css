@@ -251,7 +251,7 @@ body {
 .products h2,
 .contact h2 {
   text-align: center;
-  font-size: 2.6rem;
+  font-size: 3rem;
   margin-bottom: 3rem;
 }
 
@@ -325,8 +325,10 @@ body {
   width: 80%;
 }
 
-.menu .row .menu-card .menu-card-title {
+.menu .row .menu-card .menu-card-title,
+.menu .row .menu-card p {
   margin: 1rem auto 0.5rem;
+  font-size: 1.5rem;
 }
 
 /* Product Section */
@@ -385,7 +387,7 @@ body {
   color: var(--primary);
 }
 
-.products .product-stars .stfl {
+.product-stars .stfl {
   fill: var(--primary);
 }
 
@@ -393,7 +395,7 @@ body {
   font-size: 1.3rem;
   font-weight: 700;
 }
-.products .product-price span {
+.product-price span {
   text-decoration: line-through;
   font-weight: lighter;
   font-size: 1rem;
@@ -519,9 +521,10 @@ footer .credit a:hover {
   color: var(--bg);
   margin: 15% auto;
   padding: 1.2rem;
-  border: 1px solid #666;
-  width: 80;
+  border: 3px solid #666;
+  width: 85%;
   animation: animateModal 0.5s;
+  border-radius: 30px 25px 60px 12px;
 }
 
 /* Modal Animation */
@@ -547,9 +550,10 @@ footer .credit a:hover {
 }
 
 .modal-content img {
-  height: 25;
+  height: 35vh;
   margin-right: 2rem;
   margin-bottom: 2rem;
+  border-radius: 10px;
 }
 
 .modal-content p {
@@ -658,6 +662,10 @@ footer .credit a:hover {
 
   .contact .row form {
     padding-top: 0;
+  }
+
+  .modal-container {
+    height: 80%;
   }
 
   .modal-content {
