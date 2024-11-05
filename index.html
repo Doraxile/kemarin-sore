@@ -18,10 +18,17 @@
 
     <!-- My Style -->
     <link rel="stylesheet" href="css/style.css" />
+
+    <!-- AlpineJS -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
+    <!-- App -->
+   <script src="src/app.js"></script>
   </head>
+
   <body>
     <!-- Navbar start -->
-    <nav class="navbar">
+    <nav class="navbar" x-data>
       <a href="#" class="navbar-logo">Kemarin<span>Sore</span>.</a>
 
       <div class="navbar-nav">
@@ -31,11 +38,13 @@
         <a href="#products">Produk</a>
         <a href="#contact">Kontak</a>
       </div>
+
       <div class="navbar-extra">
         <a href="#" id="search-button"><i data-feather="search"></i></a>
-        <a href="#" id="shopping-cart-button"
-          ><i data-feather="shopping-cart"></i
-        ></a>
+        <a href="#" id="shopping-cart-button">
+          <i data-feather="shopping-cart"></i>
+          <span class="quantity-badge" x-show="$store.cart.quantity" x-text="$store.cart.quantity"></span>
+        </a>
         <a href="#" id="hamburger-menu"><i data-feather="menu"></i></a>
       </div>
 
@@ -48,45 +57,64 @@
 
       <!-- Shopping Cart start -->
       <div class="shopping-cart">
+        <template x-for="(item, index) in $store.cart.items" x-keys="index">
         <div class="cart-item">
-          <img src="img/1.jpg" alt="Product 1" />
+          <img :src="`img/products/${item.img}`" :alt="item.name">
           <div class="item-detail">
-            <h3>Product 1</h3>
-            <div class="item-price">IDR 30K</div>
+            <h3 x-text="item.name"></h3>
+              <div class="item-price">
+              <span x-text="rupiah(item.price)"></span> &times;
+              <button id="remove" @click="$store.cart.remove(item.id)">&minus;</button>
+              <span x-text="item.quantity"></span>
+              <button id="add" @click="$store.cart.add(item)">&plus;</button> &equals;
+              <span x-text="rupiah(item.total)"></span>
+              </div>
+            </div>
           </div>
-          <i data-feather="trash-2" class="delete"></i>
-        </div>
-        <div class="cart-item">
-          <img src="img/1.jpg" alt="Product 1" />
-          <div class="item-detail">
-            <h3>Product 1</h3>
-            <div class="item-price">IDR 30K</div>
-          </div>
-          <i data-feather="trash-2" class="delete"></i>
-        </div>
-        <div class="cart-item">
-          <img src="img/1.jpg" alt="Product 1" />
-          <div class="item-detail">
-            <h3>Product 1</h3>
-            <div class="item-price">IDR 30K</div>
-          </div>
-          <i data-feather="trash-2" class="delete"></i>
+        </template>
+        <h4 x-show="!$store.cart.items.length" style="margin-top: 1rem;">Keranjang Anda Kosong</h4>
+        <h4 x-show="$store.cart.items.length">total : <span x-text="rupiah($store.cart.total)"></span> </h4>
+
+        <div class="form-container" x-show="$store.cart.items.length">
+          <form action="" id="checkoutForm">
+            <h5>Customer Detail</h5>
+
+            <label for="name">
+              <span>Name</span>
+              <input type="text" name="name" id="name">
+            </label>
+            
+            <label for="email">
+              <span>Email</span>
+              <input type="email" name="email" id="email">
+            </label>
+            
+            <label for="phone">
+              <span>Phone</span>
+              <input type="number" name="phone" id="phone" autocomplete="off">
+            </label>
+
+            <button class="checkout-button" type="submit" id="checkout-button" value="checkout">Checkout</button>
+          </form>
         </div>
       </div>
       <!-- Shopping Cart end -->
+
     </nav>
     <!-- Navbar end -->
 
     <!-- Hero Section start -->
     <section class="hero" id="home">
+      <!-- <div class="mask-container"> -->
       <main class="content">
         <h1>Mari Nikmati Secangkir <span>Kopi</span></h1>
         <p>
           Sesempurna apapun kopi yang kamu buat, kopi tetap kopi, punya sisi
           pahit yang tak mungkin kamu sembunyikan -filosofi kopi
         </p>
-        <a href="#menu" class="cta">Beli sekarang</a>
+        <!-- <a href="#menu" class="cta">Beli sekarang</a> -->
       </main>
+      <!-- </div> -->
     </section>
     <!-- Hero Section end -->
 
@@ -146,7 +174,7 @@
             alt="affogato"
             class="menu-card-img"
           />
-          <h3 class="menu-card-title">- affogato -</h3>
+          <h3 class="menu-card-title"> - affogato -</h3>
           <p class="menu-card-pric[\e">IDR 28K</p>
         </div>
         <div class="menu-card">
@@ -177,116 +205,57 @@
     <!-- Menu Section end -->
 
     <!-- Products Section start -->
-    <section class="products" id="products">
+    <section class="products" id="products" x-data="products">
       <h2><span>Produk Unggulan</span> Kami</h2>
       <p>Coffee bean unggulan dari perkebunan terbaik kami</p>
 
       <div class="row">
-        <div class="product-card">
-          <div class="product-icons">
-            <a href="#"><i data-feather="shopping-cart"></i></a>
-            <a href="#" class="item-detail-button"
-              ><i data-feather="eye"></i
-            ></a>
+        <template x-for="(item, index) in items" x-key="index">
+          <div class="product-card">
+            <div class="product-icons">
+              <a href="#" @click.prevent="$store.cart.add(item)">
+                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <use href="img/feather-sprite.svg#shopping-cart" />
+                </svg>
+              </a>
+              <a href="#" class="item-detail-button">
+                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <use href="img/feather-sprite.svg#eye" />
+                </svg>
+              </a>
+            </div>
+            <div class="product-image">
+              <img :src="`img/products/${item.img}`" :alt="item.name" />
+            </div>
+            <div class="product-content"></div>
+            <h3 x-text="item.name"></h3>
+            <div class="product-stars">
+              <svg width="24" height="24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <use href="img/feather-sprite.svg#star" />
+              </svg>
+              <svg width="24" height="24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <use href="img/feather-sprite.svg#star" />
+              </svg>
+              <svg width="24" height="24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <use href="img/feather-sprite.svg#star" />
+              </svg>
+              <svg width="24" height="24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <use href="img/feather-sprite.svg#star" />
+              </svg>
+              <svg width="24" height="24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <use href="img/feather-sprite.svg#star" />
+              </svg>
+            </div>
+            <div class="product-price"><span x-text="rupiah(item.price)"></span></div>
           </div>
-          <div class="product-image">
-            <img src="img/1.jpg" alt="produk coffee" />
-          </div>
-          <div class="product-content"></div>
-          <h3>FOUNDER'S</h3>
-          <div class="product-stars">
-            <i data-feather="star" class="stfl"></i>
-            <i data-feather="star" class="stfl"></i>
-            <i data-feather="star" class="stfl"></i>
-            <i data-feather="star" class="stfl"></i>
-            <i data-feather="star" class="stfl"></i>
-          </div>
-          <div class="product-price">IDR 30K <span>IDR 55K</span></div>
-        </div>
-        <div class="product-card">
-          <div class="product-icons">
-            <a href="#"><i data-feather="shopping-cart"></i></a>
-            <a href="#" class="item-detail-button"
-              ><i data-feather="eye"></i
-            ></a>
-          </div>
-          <div class="product-image">
-            <img src="img/2.jpg" alt="produk coffee" />
-          </div>
-          <div class="product-content"></div>
-          <h3>HUNDRED MILE</h3>
-          <div class="product-stars">
-            <i data-feather="star" class="stfl"></i>
-            <i data-feather="star" class="stfl"></i>
-            <i data-feather="star" class="stfl"></i>
-            <i data-feather="star" class="stfl"></i>
-            <i data-feather="star"></i>
-          </div>
-          <div class="product-price">IDR 30K <span>IDR 55K</span></div>
-        </div>
-        <div class="product-card">
-          <div class="product-icons">
-            <a href="#"><i data-feather="shopping-cart"></i></a>
-            <a href="#" class="item-detail-button"
-              ><i data-feather="eye"></i
-            ></a>
-          </div>
-          <div class="product-image">
-            <img src="img/3.jpg" alt="produk coffee" />
-          </div>
-          <div class="product-content"></div>
-          <h3>HOLLER MTN.</h3>
-          <div class="product-stars">
-            <i data-feather="star" class="stfl"></i>
-            <i data-feather="star" class="stfl"></i>
-            <i data-feather="star" class="stfl"></i>
-            <i data-feather="star" class="stfl"></i>
-            <i data-feather="star"></i>
-          </div>
-          <div class="product-price">IDR 27K <span>IDR 50K</span></div>
-        </div>
-        <div class="product-card">
-          <div class="product-icons">
-            <a href="#"><i data-feather="shopping-cart"></i></a>
-            <a href="#" class="item-detail-button"
-              ><i data-feather="eye"></i
-            ></a>
-          </div>
-          <div class="product-image">
-            <img src="img/4.jpg" alt="produk coffee" />
-          </div>
-          <div class="product-content"></div>
-          <h3>HAIR BENDER</h3>
-          <div class="product-stars">
-            <i data-feather="star" class="stfl"></i>
-            <i data-feather="star" class="stfl"></i>
-            <i data-feather="star" class="stfl"></i>
-            <i data-feather="star" class="stfl"></i>
-            <i data-feather="star" class="stfl"></i>
-          </div>
-          <div class="product-price">IDR 27K <span>IDR 50K</span></div>
-        </div>
-        <div class="product-card">
-          <div class="product-icons">
-            <a href="#"><i data-feather="shopping-cart"></i></a>
-            <a href="#" class="item-detail-button"
-              ><i data-feather="eye"></i
-            ></a>
-          </div>
-          <div class="product-image">
-            <img src="img/5.jpg" alt="produk coffee" />
-          </div>
-          <div class="product-content"></div>
-          <h3>LOS PICOS</h3>
-          <div class="product-stars">
-            <i data-feather="star" class="stfl"></i>
-            <i data-feather="star" class="stfl"></i>
-            <i data-feather="star" class="stfl"></i>
-            <i data-feather="star" class="stfl"></i>
-            <i data-feather="star"></i>
-          </div>
-          <div class="product-price">IDR 22K <span>IDR 45K</span></div>
-        </div>
+        </template>
       </div>
     </section>
     <!-- Products Section end -->
@@ -358,7 +327,7 @@
       <div class="modal-container">
         <a href="#" class="close-icon"><i data-feather="x"></i></a>
         <div class="modal-content">
-          <img src="img/1.jpg" alt="Product 1" />
+          <img src="img/products/1.jpg" alt="Product 1" />
           <div class="product-content">
             <h3>FOUNDER'S</h3>
             <p>
